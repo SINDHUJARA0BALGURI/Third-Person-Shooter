@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
     CharacterController characterController;
     public float PlayerMoveSpeed;
+    public float playerBackwardSpeed;
     Animator anim;
     [SerializeField]
     private float turnSpeed=10f;
@@ -21,14 +22,21 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         var horizontalMovement = Input.GetAxis("Horizontal");
-        var VerticalMovement = Input.GetAxis("Vertical");
+        var VerticalMovement = Input.GetAxis("Mouse X");
 
         var playerMovement = new Vector3(horizontalMovement, 0, VerticalMovement);
-        characterController.SimpleMove(playerMovement* Time.deltaTime*PlayerMoveSpeed);
-        anim.SetFloat("Speed", playerMovement.magnitude);
+       
+        anim.SetFloat("Speed", VerticalMovement);
+        transform.Rotate(Vector3.up, horizontalMovement * turnSpeed * Time.deltaTime);
+        if (VerticalMovement != 0)
+        {
+            float moveSpeed = (VerticalMovement > 0) ? PlayerMoveSpeed : playerBackwardSpeed;
 
-        Quaternion newDirection = Quaternion.LookRotation(playerMovement);
-        transform.rotation = Quaternion.Slerp(transform.rotation, newDirection, Time.deltaTime*turnSpeed);
+            characterController.SimpleMove(playerMovement* Time.deltaTime*PlayerMoveSpeed);
+        }
+
+        // Quaternion newDirection = Quaternion.LookRotation(playerMovement);
+        //  transform.rotation = Quaternion.Slerp(transform.rotation, newDirection, Time.deltaTime*turnSpeed);
 
     }
 }
